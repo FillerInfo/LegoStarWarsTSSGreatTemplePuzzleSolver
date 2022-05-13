@@ -1,19 +1,21 @@
 // Name of program mainreturn.cpp
 #include <iostream>
 #include <fstream>
+#include <unordered_map>
 #include <stdlib.h>
-#include <string>
 
 #include "funcDefs.h"
 
 using namespace std;  
 
-int steps[100];
+const int STEP_SIZE = 20;
+int steps[STEP_SIZE];
 
 int main(int argc, char** argv){
 	srand(time(NULL));
 
 	Board board;
+	Board saveBoard;
 	resetSteps();
 
 	string line;
@@ -35,16 +37,21 @@ int main(int argc, char** argv){
 	cout << "Starting board:\n";
 	printBoard(&board);
 
+	memcpy(&saveBoard, &board, sizeof(Board));
+	printBoard(&saveBoard);
+
 	int result = hasRandSol(&board);
 	while(result != -1){
-		printBoard(&board);
-		printSteps();
-		cout << "No solution at " << result << " steps.\n";
+		//printBoard(&board);
+		//printSteps();
+		//cout << "No solution at " << result << " steps.\n";
+		cout << result;
 		resetSteps();
+		memcpy(&board, &saveBoard, sizeof(Board));
 		result = hasRandSol(&board);
 	}
 
-	cout << "Solution found!!\n";
+	cout << "\nSolution found!!\n";
 	printBoard(&board);
 	printSteps();
 
@@ -52,17 +59,16 @@ int main(int argc, char** argv){
 	// changeBoard(&board, 5, 2);
 	// printBoard(&board);
 
-
 	return 0;
 }
 
 int hasRandSol(Board* board){
 	int onesCount = countOnes(board);
 
-	for(int i = 0; i < 100; i++){
+	for(int i = 0; i < STEP_SIZE; i++){
 		//pick random square
-		int row = rand() % 6;
-		int col = rand() % 6;
+		int row = rand() % 5;
+		int col = rand() % 5;
 
 		//change board based on square
 		onesCount += changeBoard(board, row, col);
@@ -88,14 +94,17 @@ void printBoard(Board* board){
 }
 
 void printSteps(){
-	for(int i = 0; i < 100; i++){
+	for(int i = 0; i < STEP_SIZE; i++){
 		cout << steps[i] << " ";
+		if(steps[i] == -1){
+			break;
+		}
 	}
 	cout << "\n";
 }
 
 void resetSteps(){
-	for(int i = 0; i < 100; i++){
+	for(int i = 0; i < STEP_SIZE; i++){
 		steps[i] = -1;
 	}
 }
